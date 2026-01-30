@@ -4,14 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "prisma generate && next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
+    "prisma": "^7.3.0",
     "next": "16.1.6",
     "pg": "^8.18.0",
     "react": "19.2.3",
@@ -26,7 +28,6 @@
     "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "prisma": "^7.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
