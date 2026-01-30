@@ -10,11 +10,160 @@ datasource db {
   provider = "postgresql"
 }
 
-// Example model - modify or replace as needed
+// Enums
+enum ContactType {
+  SUBCONTRACTOR
+  SUPPLIER
+  GENERAL_CONTRACTOR
+  OWNER
+  ARCHITECT
+  OTHER
+}
+
+enum BidStatus {
+  DRAFT
+  SUBMITTED
+  WON
+  LOST
+  CANCELLED
+}
+
+enum RFQStatus {
+  DRAFT
+  SENT
+  VIEWED
+  RESPONDED
+  ACCEPTED
+  DECLINED
+}
+
+// Models
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relations
+  contacts Contact[]
+  projects Project[]
+  bids     Bid[]
+  rfqs     RFQ[]
+}
+
+model Contact {
+  id        String      @id @default(cuid())
+  name      String
+  company   String?
+  email     String?
+  phone     String?
+  type      ContactType @default(OTHER)
+  notes     String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Relations
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rfqs         RFQ[]
+  rfqResponses RFQResponse[]
+
+  @@index([userId])
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bids   Bid[]
+  rfqs   RFQ[]
+
+  @@index([userId])
+}
+
+model Bid {
+  id          String    @id @default(cuid())
+  name        String
+  status      BidStatus @default(DRAFT)
+  dueDate     DateTime?
+  totalAmount Decimal?  @db.Decimal(12, 2)
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String?
+  project   Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  lineItems BidLineItem[]
+
+  @@index([userId])
+  @@index([projectId])
+}
+
+model BidLineItem {
+  id          String   @id @default(cuid())
+  description String
+  quantity    Decimal  @db.Decimal(12, 4)
+  unit        String?
+  unitPrice   Decimal  @db.Decimal(12, 2)
+  totalPrice  Decimal  @db.Decimal(12, 2)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bidId String
+  bid   Bid    @relation(fields: [bidId], references: [id], onDelete: Cascade)
+
+  @@index([bidId])
+}
+
+model RFQ {
+  id        String    @id @default(cuid())
+  subject   String
+  status    RFQStatus @default(DRAFT)
+  dueDate   DateTime?
+  message   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String?
+  project   Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  contactId String?
+  contact   Contact?      @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  responses RFQResponse[]
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([contactId])
+}
+
+model RFQResponse {
+  id        String   @id @default(cuid())
+  amount    Decimal? @db.Decimal(12, 2)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  rfqId     String
+  rfq       RFQ      @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  @@index([rfqId])
+  @@index([contactId])
 }
