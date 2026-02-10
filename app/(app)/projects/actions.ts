@@ -15,7 +15,7 @@ export async function createProject(formData: FormData) {
     throw new Error("Name is required");
   }
 
-  await prisma.project.create({
+  const project = await prisma.project.create({
     data: {
       name: name.trim(),
       description,
@@ -23,6 +23,22 @@ export async function createProject(formData: FormData) {
       userId: user.id,
     },
   });
+
+  // Auto-create RFQs for every contact the user has
+  const contacts = await prisma.contact.findMany({
+    where: { userId: user.id },
+  });
+
+  if (contacts.length > 0) {
+    await prisma.rFQ.createMany({
+      data: contacts.map((contact) => ({
+        subject: `RFQ: ${name.trim()}`,
+        projectId: project.id,
+        contactId: contact.id,
+        userId: user.id,
+      })),
+    });
+  }
 
   redirect("/projects");
 }

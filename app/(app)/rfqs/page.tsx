@@ -1,109 +1,156 @@
 import Link from "next/link";
-import { Send, Plus } from "lucide-react";
-import { Button, Badge, EmptyState } from "@/components/ui";
+import { Send, FolderKanban } from "lucide-react";
+import { Badge, EmptyState, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import prisma from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/user";
+import { SendRFQButton } from "./send-button";
 export const dynamic = "force-dynamic";
 
-const statusLabels: Record<string, string> = {
-  DRAFT: "Draft",
-  SENT: "Sent",
-  RECEIVED: "Received",
-  CLOSED: "Closed",
+const contactTypeLabels: Record<string, string> = {
+  SUBCONTRACTOR: "Subcontractors",
+  SUPPLIER: "Suppliers",
+  GENERAL_CONTRACTOR: "General Contractors",
+  OWNER: "Owners",
+  ARCHITECT: "Architects",
+  OTHER: "Other",
 };
 
-const statusBadgeVariant: Record<string, "default" | "success" | "warning" | "secondary"> = {
-  DRAFT: "secondary",
-  SENT: "default",
-  RECEIVED: "success",
-  CLOSED: "warning",
-};
+const contactTypeOrder = [
+  "SUBCONTRACTOR",
+  "SUPPLIER",
+  "GENERAL_CONTRACTOR",
+  "OWNER",
+  "ARCHITECT",
+  "OTHER",
+];
 
 export default async function RFQsPage() {
   const user = await getDefaultUser();
-  const rfqs = await prisma.rFQ.findMany({
+
+  const projects = await prisma.project.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
     include: {
-      project: { select: { name: true } },
-      contact: { select: { name: true } },
-      _count: { select: { responses: true } },
+      rfqs: {
+        include: {
+          contact: true,
+        },
+        orderBy: { createdAt: "asc" },
+      },
     },
   });
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+  if (projects.length === 0) {
+    return (
+      <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold">RFQs</h1>
           <p className="text-[var(--muted-foreground)]">
             Send and track requests for quotes from your contacts.
           </p>
         </div>
-        <Link href="/rfqs/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            New RFQ
-          </Button>
-        </Link>
-      </div>
-
-      {rfqs.length === 0 ? (
         <EmptyState
-          icon={Send}
-          title="No RFQs yet"
-          description="Create your first request for quote to start getting pricing from your subcontractors and suppliers."
+          icon={FolderKanban}
+          title="No projects yet"
+          description="Create a project first — RFQs will be automatically generated for all your contacts."
           action={
-            <Link href="/rfqs/new">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Create RFQ
-              </Button>
+            <Link href="/projects/new">
+              <button className="inline-flex items-center justify-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)] hover:bg-[var(--primary)]/90">
+                Create Project
+              </button>
             </Link>
           }
         />
-      ) : (
-        <div className="rounded-lg border border-[var(--border)] overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-[var(--muted)] text-[var(--muted-foreground)]">
-              <tr>
-                <th className="text-left px-4 py-3 font-medium">Subject</th>
-                <th className="text-left px-4 py-3 font-medium">Project</th>
-                <th className="text-left px-4 py-3 font-medium">Contact</th>
-                <th className="text-left px-4 py-3 font-medium">Status</th>
-                <th className="text-left px-4 py-3 font-medium">Responses</th>
-                <th className="text-left px-4 py-3 font-medium">Due Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--border)]">
-              {rfqs.map((rfq) => (
-                <tr key={rfq.id} className="hover:bg-[var(--muted)]/50">
-                  <td className="px-4 py-3 font-medium">{rfq.subject}</td>
-                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
-                    {rfq.project?.name || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
-                    {rfq.contact?.name || "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={statusBadgeVariant[rfq.status] || "secondary"}>
-                      {statusLabels[rfq.status] || rfq.status}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant="secondary">{rfq._count.responses}</Badge>
-                  </td>
-                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
-                    {rfq.dueDate
-                      ? new Date(rfq.dueDate).toLocaleDateString()
-                      : "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">RFQs</h1>
+        <p className="text-[var(--muted-foreground)]">
+          Send and track requests for quotes from your contacts.
+        </p>
+      </div>
+
+      {projects.map((project) => {
+        // Group RFQs by contact type
+        const grouped: Record<string, typeof project.rfqs> = {};
+        for (const rfq of project.rfqs) {
+          const type = rfq.contact?.type || "OTHER";
+          if (!grouped[type]) grouped[type] = [];
+          grouped[type].push(rfq);
+        }
+
+        const sortedTypes = contactTypeOrder.filter((t) => grouped[t]?.length);
+
+        return (
+          <Card key={project.id}>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>{project.name}</CardTitle>
+                {project.location && (
+                  <span className="text-sm text-[var(--muted-foreground)]">
+                    {project.location}
+                  </span>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              {sortedTypes.length === 0 ? (
+                <p className="text-sm text-[var(--muted-foreground)]">
+                  No RFQs for this project. Add contacts and create a new project to generate RFQs.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {sortedTypes.map((type) => (
+                    <div key={type}>
+                      <h3 className="text-sm font-semibold text-[var(--muted-foreground)] mb-2">
+                        {contactTypeLabels[type] || type}
+                      </h3>
+                      <div className="rounded-lg border border-[var(--border)] overflow-hidden">
+                        <table className="w-full text-sm">
+                          <tbody className="divide-y divide-[var(--border)]">
+                            {grouped[type].map((rfq) => {
+                              const contact = rfq.contact;
+                              const mailtoUrl = contact?.email
+                                ? `mailto:${contact.email}?subject=${encodeURIComponent(`Request for Quote - ${project.name}`)}&body=${encodeURIComponent(`Hi ${contact.name},\n\nWe are requesting a quote for the following project:\n\nProject: ${project.name}${project.location ? `\nLocation: ${project.location}` : ""}${project.description ? `\nDescription: ${project.description}` : ""}\n\nPlease provide your best pricing at your earliest convenience.\n\nThank you`)}`
+                                : "";
+
+                              return (
+                                <tr key={rfq.id} className="hover:bg-[var(--muted)]/50">
+                                  <td className="px-4 py-3 font-medium">
+                                    {contact?.name || "Unknown Contact"}
+                                  </td>
+                                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
+                                    {contact?.email || "No email"}
+                                  </td>
+                                  <td className="px-4 py-3 text-right">
+                                    {contact?.email ? (
+                                      <SendRFQButton
+                                        rfqId={rfq.id}
+                                        mailtoUrl={mailtoUrl}
+                                        status={rfq.status}
+                                      />
+                                    ) : (
+                                      <Badge variant="secondary">No email</Badge>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }
