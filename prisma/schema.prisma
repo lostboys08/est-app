@@ -7,34 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-}
-
-// Enums
-enum ContactType {
-  SUBCONTRACTOR
-  SUPPLIER
-  GENERAL_CONTRACTOR
-  OWNER
-  ARCHITECT
-  OTHER
-}
-
-enum BidStatus {
-  DRAFT
-  SUBMITTED
-  WON
-  LOST
-  CANCELLED
-}
-
-enum RFQStatus {
-  DRAFT
-  SENT
-  VIEWED
-  RESPONDED
-  ACCEPTED
-  DECLINED
+  provider = "sqlite"
 }
 
 // Models
@@ -53,15 +26,15 @@ model User {
 }
 
 model Contact {
-  id        String      @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
   company   String?
   email     String?
   phone     String?
-  type      ContactType @default(OTHER)
+  type      String   @default("OTHER")
   notes     String?
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   userId       String
@@ -90,14 +63,14 @@ model Project {
 }
 
 model Bid {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
-  status      BidStatus @default(DRAFT)
+  status      String   @default("DRAFT")
   dueDate     DateTime?
-  totalAmount Decimal?  @db.Decimal(12, 2)
+  totalAmount Decimal?
   notes       String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
   userId    String
@@ -113,10 +86,10 @@ model Bid {
 model BidLineItem {
   id          String   @id @default(cuid())
   description String
-  quantity    Decimal  @db.Decimal(12, 4)
+  quantity    Decimal
   unit        String?
-  unitPrice   Decimal  @db.Decimal(12, 2)
-  totalPrice  Decimal  @db.Decimal(12, 2)
+  unitPrice   Decimal
+  totalPrice  Decimal
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -131,7 +104,7 @@ model BidLineItem {
 model RFQ {
   id        String    @id @default(cuid())
   subject   String
-  status    RFQStatus @default(DRAFT)
+  status    String    @default("DRAFT")
   dueDate   DateTime?
   message   String?
   createdAt DateTime  @default(now())
@@ -153,7 +126,7 @@ model RFQ {
 
 model RFQResponse {
   id        String   @id @default(cuid())
-  amount    Decimal? @db.Decimal(12, 2)
+  amount    Decimal?
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

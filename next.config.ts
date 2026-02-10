@@ -13,7 +13,8 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "standalone",
+  serverExternalPackages: ["better-sqlite3"],
 };
 
 export default withPWA(nextConfig);

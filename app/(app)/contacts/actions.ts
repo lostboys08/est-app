@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/user";
-import { ContactType } from "@/app/generated/prisma/client";
 import { redirect } from "next/navigation";
 
 export async function createContact(formData: FormData) {
@@ -12,7 +11,7 @@ export async function createContact(formData: FormData) {
   const company = (formData.get("company") as string) || null;
   const email = (formData.get("email") as string) || null;
   const phone = (formData.get("phone") as string) || null;
-  const type = (formData.get("type") as ContactType) || "OTHER";
+  const type = (formData.get("type") as string) || "OTHER";
   const notes = (formData.get("notes") as string) || null;
 
   if (!name || !name.trim()) {

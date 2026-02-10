@@ -3,11 +3,9 @@ import { Users, Plus } from "lucide-react";
 import { Button, Badge, EmptyState } from "@/components/ui";
 import prisma from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/user";
-import { ContactType } from "@/app/generated/prisma/client";
-
 export const dynamic = "force-dynamic";
 
-const contactTypeLabels: Record<ContactType, string> = {
+const contactTypeLabels: Record<string, string> = {
   SUBCONTRACTOR: "Subcontractor",
   SUPPLIER: "Supplier",
   GENERAL_CONTRACTOR: "General Contractor",
@@ -16,7 +14,7 @@ const contactTypeLabels: Record<ContactType, string> = {
   OTHER: "Other",
 };
 
-const contactTypeBadgeVariant: Record<ContactType, "default" | "success" | "warning" | "secondary"> = {
+const contactTypeBadgeVariant: Record<string, "default" | "success" | "warning" | "secondary"> = {
   SUBCONTRACTOR: "default",
   SUPPLIER: "success",
   GENERAL_CONTRACTOR: "warning",
