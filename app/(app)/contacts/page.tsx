@@ -1,8 +1,35 @@
 import Link from "next/link";
 import { Users, Plus } from "lucide-react";
-import { Button, EmptyState } from "@/components/ui";
+import { Button, Badge, EmptyState } from "@/components/ui";
+import prisma from "@/lib/prisma";
+import { getDefaultUser } from "@/lib/user";
+import { ContactType } from "@/app/generated/prisma/client";
 
-export default function ContactsPage() {
+const contactTypeLabels: Record<ContactType, string> = {
+  SUBCONTRACTOR: "Subcontractor",
+  SUPPLIER: "Supplier",
+  GENERAL_CONTRACTOR: "General Contractor",
+  OWNER: "Owner",
+  ARCHITECT: "Architect",
+  OTHER: "Other",
+};
+
+const contactTypeBadgeVariant: Record<ContactType, "default" | "success" | "warning" | "secondary"> = {
+  SUBCONTRACTOR: "default",
+  SUPPLIER: "success",
+  GENERAL_CONTRACTOR: "warning",
+  OWNER: "secondary",
+  ARCHITECT: "secondary",
+  OTHER: "secondary",
+};
+
+export default async function ContactsPage() {
+  const user = await getDefaultUser();
+  const contacts = await prisma.contact.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -20,19 +47,56 @@ export default function ContactsPage() {
         </Link>
       </div>
 
-      <EmptyState
-        icon={Users}
-        title="No contacts yet"
-        description="Add your first contact to start building your network of subcontractors and suppliers."
-        action={
-          <Link href="/contacts/new">
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Contact
-            </Button>
-          </Link>
-        }
-      />
+      {contacts.length === 0 ? (
+        <EmptyState
+          icon={Users}
+          title="No contacts yet"
+          description="Add your first contact to start building your network of subcontractors and suppliers."
+          action={
+            <Link href="/contacts/new">
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Contact
+              </Button>
+            </Link>
+          }
+        />
+      ) : (
+        <div className="rounded-lg border border-[var(--border)] overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-[var(--muted)] text-[var(--muted-foreground)]">
+              <tr>
+                <th className="text-left px-4 py-3 font-medium">Name</th>
+                <th className="text-left px-4 py-3 font-medium">Company</th>
+                <th className="text-left px-4 py-3 font-medium">Email</th>
+                <th className="text-left px-4 py-3 font-medium">Phone</th>
+                <th className="text-left px-4 py-3 font-medium">Type</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--border)]">
+              {contacts.map((contact) => (
+                <tr key={contact.id} className="hover:bg-[var(--muted)]/50">
+                  <td className="px-4 py-3 font-medium">{contact.name}</td>
+                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
+                    {contact.company || "—"}
+                  </td>
+                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
+                    {contact.email || "—"}
+                  </td>
+                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
+                    {contact.phone || "—"}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge variant={contactTypeBadgeVariant[contact.type]}>
+                      {contactTypeLabels[contact.type]}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
