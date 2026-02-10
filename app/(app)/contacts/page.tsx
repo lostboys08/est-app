@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/user";
 import { ContactType } from "@/app/generated/prisma/client";
 
+export const dynamic = "force-dynamic";
+
 const contactTypeLabels: Record<ContactType, string> = {
   SUBCONTRACTOR: "Subcontractor",
   SUPPLIER: "Supplier",
