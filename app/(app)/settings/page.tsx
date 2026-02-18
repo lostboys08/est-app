@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui";
+import { AppearanceSettings } from "./AppearanceSettings";
 
 export default function SettingsPage() {
   return (
@@ -11,6 +12,16 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Appearance</CardTitle>
+            <CardDescription>Choose your preferred color theme</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AppearanceSettings />
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Profile</CardTitle>
