@@ -86,7 +86,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
           }
         />
       ) : (
-        <div className="rounded-lg border border-[var(--border)] overflow-hidden">
+        <div className="rounded-lg border border-[var(--border)]">
           <table className="w-full text-sm">
             <thead className="bg-[var(--muted)] text-[var(--muted-foreground)]">
               <tr>
