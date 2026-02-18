@@ -11,6 +11,9 @@ export async function createProject(formData: FormData) {
   const name = formData.get("name") as string;
   const description = (formData.get("description") as string) || null;
   const location = (formData.get("location") as string) || null;
+  const fileUrl = (formData.get("fileUrl") as string) || null;
+  const dueDateRaw = (formData.get("dueDate") as string) || null;
+  const dueDate = dueDateRaw ? new Date(dueDateRaw) : null;
 
   if (!name || !name.trim()) {
     throw new Error("Name is required");
@@ -21,6 +24,8 @@ export async function createProject(formData: FormData) {
       name: name.trim(),
       description,
       location,
+      fileUrl,
+      dueDate,
       userId: user.id,
     },
   });
@@ -50,6 +55,9 @@ export async function updateProject(id: string, formData: FormData) {
   const name = formData.get("name") as string;
   const description = (formData.get("description") as string) || null;
   const location = (formData.get("location") as string) || null;
+  const fileUrl = (formData.get("fileUrl") as string) || null;
+  const dueDateRaw = (formData.get("dueDate") as string) || null;
+  const dueDate = dueDateRaw ? new Date(dueDateRaw) : null;
 
   if (!name || !name.trim()) {
     throw new Error("Name is required");
@@ -61,6 +69,8 @@ export async function updateProject(id: string, formData: FormData) {
       name: name.trim(),
       description,
       location,
+      fileUrl,
+      dueDate,
     },
   });
 

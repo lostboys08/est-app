@@ -31,6 +31,8 @@ export default function NewProjectPage() {
           <form action={createProject} className="space-y-4">
             <Input label="Name" name="name" placeholder="Project name" required />
             <Input label="Location" name="location" placeholder="City, State" />
+            <Input label="Project Files Link" name="fileUrl" placeholder="https://..." />
+            <Input label="Bid Due Date" name="dueDate" type="date" />
             <div className="space-y-1.5">
               <label htmlFor="description" className="block text-sm font-medium text-[var(--foreground)]">
                 Description

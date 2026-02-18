@@ -114,8 +114,13 @@ export default async function RFQsPage() {
                           <tbody className="divide-y divide-[var(--border)]">
                             {grouped[type].map((rfq) => {
                               const contact = rfq.contact;
+                              const firstName = contact?.name?.split(" ")[0] ?? contact?.name ?? "";
+                              const dueDateStr = project.dueDate
+                                ? new Date(project.dueDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+                                : "[Due Date TBD]";
+                              const fileLink = project.fileUrl ?? "[Insert project files link here]";
                               const mailtoUrl = contact?.email
-                                ? `mailto:${contact.email}?subject=${encodeURIComponent(`Request for Quote - ${project.name}`)}&body=${encodeURIComponent(`Hi ${contact.name},\n\nWe are requesting a quote for the following project:\n\nProject: ${project.name}${project.location ? `\nLocation: ${project.location}` : ""}${project.description ? `\nDescription: ${project.description}` : ""}\n\nPlease provide your best pricing at your earliest convenience.\n\nThank you`)}`
+                                ? `mailto:${contact.email}?subject=${encodeURIComponent(`Request for Quote - ${project.name}`)}&body=${encodeURIComponent(`Hi ${firstName},\n\nWe are requesting a quote for the ${project.name}. Please review the project documents and provide pricing for your scope of work.\n\nOur bid is due on ${dueDateStr}, so we must receive your quote no later than that date. Earlier submission is strongly preferred to allow adequate time for review.\n\nThe project files are available at the link below:\n${fileLink}\n\nIf you have any questions or need additional information, please contact us as soon as possible. Bids should be sent to: Estimating@kennyseng.com.\n\nThank you for your prompt attention to this request.\n\nThanks,`)}`
                                 : "";
 
                               return (

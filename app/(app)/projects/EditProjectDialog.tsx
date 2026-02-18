@@ -20,6 +20,8 @@ interface EditProjectDialogProps {
     name: string;
     description: string | null;
     location: string | null;
+    fileUrl: string | null;
+    dueDate: Date | null;
   };
 }
 
@@ -56,6 +58,18 @@ export function EditProjectDialog({
             name="location"
             defaultValue={project.location ?? ""}
             placeholder="City, State"
+          />
+          <Input
+            label="Project Files Link"
+            name="fileUrl"
+            defaultValue={project.fileUrl ?? ""}
+            placeholder="https://..."
+          />
+          <Input
+            label="Bid Due Date"
+            name="dueDate"
+            type="date"
+            defaultValue={project.dueDate ? new Date(project.dueDate).toISOString().split("T")[0] : ""}
           />
           <div className="space-y-1.5">
             <label

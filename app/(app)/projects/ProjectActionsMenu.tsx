@@ -13,6 +13,8 @@ interface ProjectActionsMenuProps {
     name: string;
     description: string | null;
     location: string | null;
+    fileUrl: string | null;
+    dueDate: Date | null;
     archived: boolean;
   };
 }
