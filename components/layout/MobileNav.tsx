@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  FileText,
+  FolderKanban,
   Users,
   Send,
   MoreHorizontal,
@@ -14,7 +14,7 @@ import { useSidebar } from "./SidebarContext";
 
 const mobileNavItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/bids", icon: FileText, label: "Bids" },
+  { href: "/projects", icon: FolderKanban, label: "Bids" },
   { href: "/contacts", icon: Users, label: "Contacts" },
   { href: "/rfqs", icon: Send, label: "RFQs" },
 ];

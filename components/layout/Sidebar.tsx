@@ -2,7 +2,6 @@
 
 import {
   LayoutDashboard,
-  FileText,
   Users,
   Send,
   FolderKanban,
@@ -17,10 +16,9 @@ import { SidebarNavItem } from "./SidebarNavItem";
 
 const primaryNav = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/bids", icon: FileText, label: "Bids" },
+  { href: "/projects", icon: FolderKanban, label: "Bids" },
   { href: "/contacts", icon: Users, label: "Contacts" },
   { href: "/rfqs", icon: Send, label: "RFQs" },
-  { href: "/projects", icon: FolderKanban, label: "Projects" },
 ];
 
 const secondaryNav = [
