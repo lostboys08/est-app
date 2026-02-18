@@ -3,6 +3,7 @@ import { Users, Plus } from "lucide-react";
 import { Button, Badge, EmptyState } from "@/components/ui";
 import prisma from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/user";
+import { ContactActionsMenu } from "./ContactActionsMenu";
 export const dynamic = "force-dynamic";
 
 const contactTypeLabels: Record<string, string> = {
@@ -71,6 +72,7 @@ export default async function ContactsPage() {
                 <th className="text-left px-4 py-3 font-medium">Email</th>
                 <th className="text-left px-4 py-3 font-medium">Phone</th>
                 <th className="text-left px-4 py-3 font-medium">Type</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
@@ -90,6 +92,9 @@ export default async function ContactsPage() {
                     <Badge variant={contactTypeBadgeVariant[contact.type]}>
                       {contactTypeLabels[contact.type]}
                     </Badge>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <ContactActionsMenu contact={contact} />
                   </td>
                 </tr>
               ))}
