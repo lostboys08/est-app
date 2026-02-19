@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Send, FolderKanban } from "lucide-react";
+import { FolderKanban } from "lucide-react";
 import { Badge, EmptyState, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import prisma from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/user";
 import { SendRFQButton } from "./send-button";
+import { CreateRFQButton } from "./CreateRFQButton";
 export const dynamic = "force-dynamic";
 
 const contactTypeLabels: Record<string, string> = {
@@ -27,32 +28,41 @@ const contactTypeOrder = [
 export default async function RFQsPage() {
   const user = await getDefaultUser();
 
-  const projects = await prisma.project.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-    include: {
-      rfqs: {
-        include: {
-          contact: true,
+  const [projects, contacts] = await Promise.all([
+    prisma.project.findMany({
+      where: { userId: user.id, archived: false },
+      orderBy: { createdAt: "desc" },
+      include: {
+        rfqs: {
+          where: { contactId: { not: null } },
+          include: { contact: true },
+          orderBy: { createdAt: "asc" },
         },
-        orderBy: { createdAt: "asc" },
       },
-    },
-  });
+    }),
+    prisma.contact.findMany({
+      where: { userId: user.id },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
-  if (projects.length === 0) {
-    return (
-      <div className="space-y-6">
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">RFQs</h1>
           <p className="text-[var(--muted-foreground)]">
             Send and track requests for quotes from your contacts.
           </p>
         </div>
+        <CreateRFQButton projects={projects} contacts={contacts} />
+      </div>
+
+      {projects.length === 0 && (
         <EmptyState
           icon={FolderKanban}
           title="No projects yet"
-          description="Create a project first — RFQs will be automatically generated for all your contacts."
+          description="Create a project first, then use the New RFQ button to send quotes to your contacts."
           action={
             <Link href="/projects/new">
               <button className="inline-flex items-center justify-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)] hover:bg-[var(--primary)]/90">
@@ -61,18 +71,7 @@ export default async function RFQsPage() {
             </Link>
           }
         />
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">RFQs</h1>
-        <p className="text-[var(--muted-foreground)]">
-          Send and track requests for quotes from your contacts.
-        </p>
-      </div>
+      )}
 
       {projects.map((project) => {
         // Group RFQs by contact type
@@ -100,7 +99,7 @@ export default async function RFQsPage() {
             <CardContent>
               {sortedTypes.length === 0 ? (
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  No RFQs for this project. Add contacts and create a new project to generate RFQs.
+                  No RFQs yet. Use the New RFQ button to send quotes for this project.
                 </p>
               ) : (
                 <div className="space-y-4">
