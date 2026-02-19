@@ -40,12 +40,17 @@ export default async function ContactsPage() {
             Manage your subcontractors, suppliers, and other contacts.
           </p>
         </div>
-        <Link href="/contacts/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Contact
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/contacts/import">
+            <Button variant="secondary">Import</Button>
+          </Link>
+          <Link href="/contacts/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Contact
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {contacts.length === 0 ? (
