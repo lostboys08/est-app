@@ -28,6 +28,30 @@ const statusBadgeVariant: Record<string, "default" | "success" | "warning" | "se
 export function SendRFQButton({ rfqId, mailtoUrl, status }: SendRFQButtonProps) {
   const [isPending, startTransition] = useTransition();
 
+  const handleClick = () => {
+    window.location.href = mailtoUrl;
+    if (status === "DRAFT") {
+      startTransition(async () => {
+        await markRFQSent(rfqId);
+      });
+    }
+  };
+
+  if (status === "SENT") {
+    return (
+      <div className="flex items-center gap-2">
+        <Badge variant={statusBadgeVariant["SENT"]}>
+          <Check className="h-3 w-3 mr-1" />
+          Sent
+        </Badge>
+        <Button size="sm" variant="ghost" onClick={handleClick}>
+          <Mail className="h-3 w-3 mr-1" />
+          Resend
+        </Button>
+      </div>
+    );
+  }
+
   if (status !== "DRAFT") {
     return (
       <Badge variant={statusBadgeVariant[status] || "secondary"}>
@@ -36,13 +60,6 @@ export function SendRFQButton({ rfqId, mailtoUrl, status }: SendRFQButtonProps) 
       </Badge>
     );
   }
-
-  const handleClick = () => {
-    window.location.href = mailtoUrl;
-    startTransition(async () => {
-      await markRFQSent(rfqId);
-    });
-  };
 
   return (
     <Button size="sm" onClick={handleClick} disabled={isPending}>
