@@ -13,6 +13,8 @@ export async function createContact(formData: FormData) {
   const email = (formData.get("email") as string) || null;
   const phone = (formData.get("phone") as string) || null;
   const type = (formData.get("type") as string) || "OTHER";
+  const subCategory = (formData.get("subCategory") as string) || null;
+  const location = (formData.get("location") as string) || null;
   const notes = (formData.get("notes") as string) || null;
 
   if (!name || !name.trim()) {
@@ -26,6 +28,8 @@ export async function createContact(formData: FormData) {
       email,
       phone,
       type,
+      subCategory,
+      location,
       notes,
       userId: user.id,
     },
@@ -42,6 +46,8 @@ export async function updateContact(id: string, formData: FormData) {
   const email = (formData.get("email") as string) || null;
   const phone = (formData.get("phone") as string) || null;
   const type = (formData.get("type") as string) || "OTHER";
+  const subCategory = (formData.get("subCategory") as string) || null;
+  const location = (formData.get("location") as string) || null;
   const notes = (formData.get("notes") as string) || null;
 
   if (!name || !name.trim()) {
@@ -56,6 +62,8 @@ export async function updateContact(id: string, formData: FormData) {
       email,
       phone,
       type,
+      subCategory,
+      location,
       notes,
     },
   });

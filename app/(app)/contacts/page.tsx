@@ -72,6 +72,8 @@ export default async function ContactsPage() {
                 <th className="text-left px-4 py-3 font-medium">Email</th>
                 <th className="text-left px-4 py-3 font-medium">Phone</th>
                 <th className="text-left px-4 py-3 font-medium">Type</th>
+                <th className="text-left px-4 py-3 font-medium">Sub Category</th>
+                <th className="text-left px-4 py-3 font-medium">Location</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -92,6 +94,12 @@ export default async function ContactsPage() {
                     <Badge variant={contactTypeBadgeVariant[contact.type]}>
                       {contactTypeLabels[contact.type]}
                     </Badge>
+                  </td>
+                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
+                    {contact.subCategory || "—"}
+                  </td>
+                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
+                    {contact.location || "—"}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <ContactActionsMenu contact={contact} />

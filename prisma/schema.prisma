@@ -31,8 +31,10 @@ model Contact {
   company   String?
   email     String?
   phone     String?
-  type      String   @default("OTHER")
-  notes     String?
+  type        String   @default("OTHER")
+  subCategory String?
+  location    String?
+  notes       String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,15 +11,10 @@ import {
   Input,
 } from "@/components/ui";
 import { updateContact } from "./actions";
+import { contactTypes, SUBCATEGORIES } from "./contact-types";
 
-const contactTypes = [
-  { value: "SUBCONTRACTOR", label: "Subcontractor" },
-  { value: "SUPPLIER", label: "Supplier" },
-  { value: "GENERAL_CONTRACTOR", label: "General Contractor" },
-  { value: "OWNER", label: "Owner" },
-  { value: "ARCHITECT", label: "Architect" },
-  { value: "OTHER", label: "Other" },
-];
+const selectClass =
+  "flex h-10 w-full rounded-lg border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2";
 
 interface EditContactDialogProps {
   open: boolean;
@@ -31,6 +26,8 @@ interface EditContactDialogProps {
     email: string | null;
     phone: string | null;
     type: string;
+    subCategory: string | null;
+    location: string | null;
     notes: string | null;
   };
 }
@@ -41,6 +38,8 @@ export function EditContactDialog({
   contact,
 }: EditContactDialogProps) {
   const [isPending, startTransition] = useTransition();
+  const [selectedType, setSelectedType] = useState(contact.type);
+  const subcategories = SUBCATEGORIES[selectedType] || [];
 
   function handleSubmit(formData: FormData) {
     startTransition(async () => {
@@ -87,25 +86,60 @@ export function EditContactDialog({
               placeholder="(555) 555-5555"
             />
           </div>
+          <div className={subcategories.length > 0 ? "grid gap-4 sm:grid-cols-2" : ""}>
+            <div className="space-y-1.5">
+              <label
+                htmlFor="edit-type"
+                className="block text-sm font-medium text-[var(--foreground)]"
+              >
+                Contact Type
+              </label>
+              <select
+                id="edit-type"
+                name="type"
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className={selectClass}
+              >
+                {contactTypes.map((ct) => (
+                  <option key={ct.value} value={ct.value}>
+                    {ct.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {subcategories.length > 0 && (
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="edit-subCategory"
+                  className="block text-sm font-medium text-[var(--foreground)]"
+                >
+                  Sub Category
+                </label>
+                <select
+                  key={selectedType}
+                  id="edit-subCategory"
+                  name="subCategory"
+                  defaultValue={contact.subCategory ?? ""}
+                  className={selectClass}
+                >
+                  <option value="">— Select —</option>
+                  {subcategories.map((sc) => (
+                    <option key={sc} value={sc}>
+                      {sc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
           <div className="space-y-1.5">
-            <label
-              htmlFor="edit-type"
-              className="block text-sm font-medium text-[var(--foreground)]"
-            >
-              Contact Type
-            </label>
-            <select
-              id="edit-type"
-              name="type"
-              defaultValue={contact.type}
-              className="flex h-10 w-full rounded-lg border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
-            >
-              {contactTypes.map((ct) => (
-                <option key={ct.value} value={ct.value}>
-                  {ct.label}
-                </option>
-              ))}
-            </select>
+            <Input
+              label="Location"
+              name="location"
+              defaultValue={contact.location ?? ""}
+              placeholder="City, Province / Region"
+            />
           </div>
           <div className="space-y-1.5">
             <label

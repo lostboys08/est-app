@@ -14,6 +14,8 @@ interface ContactActionsMenuProps {
     email: string | null;
     phone: string | null;
     type: string;
+    subCategory: string | null;
+    location: string | null;
     notes: string | null;
   };
 }

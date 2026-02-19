@@ -1,20 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button, Card, CardContent, CardHeader, CardTitle, Input } from "@/components/ui";
 import { createContact } from "../actions";
+import { contactTypes, SUBCATEGORIES } from "../contact-types";
 
-const contactTypes = [
-  { value: "SUBCONTRACTOR", label: "Subcontractor" },
-  { value: "SUPPLIER", label: "Supplier" },
-  { value: "GENERAL_CONTRACTOR", label: "General Contractor" },
-  { value: "OWNER", label: "Owner" },
-  { value: "ARCHITECT", label: "Architect" },
-  { value: "OTHER", label: "Other" },
-];
+const selectClass =
+  "flex h-10 w-full rounded-lg border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2";
 
 export default function NewContactPage() {
+  const [selectedType, setSelectedType] = useState("OTHER");
+  const subcategories = SUBCATEGORIES[selectedType] || [];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -46,22 +45,48 @@ export default function NewContactPage() {
               <Input label="Email" name="email" type="email" placeholder="email@example.com" />
               <Input label="Phone" name="phone" type="tel" placeholder="(555) 555-5555" />
             </div>
+            <div className={subcategories.length > 0 ? "grid gap-4 sm:grid-cols-2" : ""}>
+              <div className="space-y-1.5">
+                <label htmlFor="type" className="block text-sm font-medium text-[var(--foreground)]">
+                  Contact Type
+                </label>
+                <select
+                  id="type"
+                  name="type"
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className={selectClass}
+                >
+                  {contactTypes.map((ct) => (
+                    <option key={ct.value} value={ct.value}>
+                      {ct.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {subcategories.length > 0 && (
+                <div className="space-y-1.5">
+                  <label htmlFor="subCategory" className="block text-sm font-medium text-[var(--foreground)]">
+                    Sub Category
+                  </label>
+                  <select
+                    key={selectedType}
+                    id="subCategory"
+                    name="subCategory"
+                    className={selectClass}
+                  >
+                    <option value="">— Select —</option>
+                    {subcategories.map((sc) => (
+                      <option key={sc} value={sc}>
+                        {sc}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
             <div className="space-y-1.5">
-              <label htmlFor="type" className="block text-sm font-medium text-[var(--foreground)]">
-                Contact Type
-              </label>
-              <select
-                id="type"
-                name="type"
-                defaultValue="OTHER"
-                className="flex h-10 w-full rounded-lg border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
-              >
-                {contactTypes.map((ct) => (
-                  <option key={ct.value} value={ct.value}>
-                    {ct.label}
-                  </option>
-                ))}
-              </select>
+              <Input label="Location" name="location" placeholder="City, Province / Region" />
             </div>
             <div className="space-y-1.5">
               <label htmlFor="notes" className="block text-sm font-medium text-[var(--foreground)]">
