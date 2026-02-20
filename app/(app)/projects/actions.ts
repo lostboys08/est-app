@@ -30,22 +30,6 @@ export async function createProject(formData: FormData) {
     },
   });
 
-  // Auto-create RFQs for every contact the user has
-  const contacts = await prisma.contact.findMany({
-    where: { userId: user.id },
-  });
-
-  if (contacts.length > 0) {
-    await prisma.rFQ.createMany({
-      data: contacts.map((contact) => ({
-        subject: `RFQ: ${name.trim()}`,
-        projectId: project.id,
-        contactId: contact.id,
-        userId: user.id,
-      })),
-    });
-  }
-
   redirect("/projects");
 }
 
