@@ -22,19 +22,7 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile</CardTitle>
-            <CardDescription>Your personal information and preferences</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-[var(--muted-foreground)]">
-              Profile settings will be available here.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
+       <Card>
           <CardHeader>
             <CardTitle>Company</CardTitle>
             <CardDescription>Your company details for bid documents</CardDescription>
@@ -45,19 +33,7 @@ export default function SettingsPage() {
             </p>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Notifications</CardTitle>
-            <CardDescription>Configure how you receive updates</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-[var(--muted-foreground)]">
-              Notification settings will be available here.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+     </div>
     </div>
   );
 }
