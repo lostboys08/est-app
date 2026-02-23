@@ -16,7 +16,7 @@ import { SidebarNavItem } from "./SidebarNavItem";
 
 const primaryNav = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/projects", icon: FolderKanban, label: "Bids" },
+  { href: "/projects", icon: FolderKanban, label: "Projects" },
   { href: "/contacts", icon: Users, label: "Contacts" },
   { href: "/rfqs", icon: Send, label: "RFQs" },
 ];

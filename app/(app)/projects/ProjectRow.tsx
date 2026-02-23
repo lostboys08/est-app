@@ -8,7 +8,10 @@ interface ProjectRowProps {
   project: {
     id: string;
     name: string;
+    description: string | null;
     location: string | null;
+    fileUrl: string | null;
+    dueDate: Date | null;
     archived: boolean;
     createdAt: Date;
     _count: { bids: number; rfqs: number };

@@ -205,7 +205,7 @@ export function ContactsView({ contacts }: { contacts: Contact[] }) {
                     {contact.location || "—"}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <ContactActionsMenu contact={contact} />
+                    <ContactActionsMenu contact={contact} subcategories={SUBCATEGORIES} />
                   </td>
                 </tr>
               ))}
