@@ -7,23 +7,7 @@ import { SendRFQButton } from "./send-button";
 import { CreateRFQButton } from "./CreateRFQButton";
 export const dynamic = "force-dynamic";
 
-const contactTypeLabels: Record<string, string> = {
-  SUBCONTRACTOR: "Subcontractors",
-  SUPPLIER: "Suppliers",
-  GENERAL_CONTRACTOR: "General Contractors",
-  OWNER: "Owners",
-  ARCHITECT: "Architects",
-  OTHER: "Other",
-};
-
-const contactTypeOrder = [
-  "SUBCONTRACTOR",
-  "SUPPLIER",
-  "GENERAL_CONTRACTOR",
-  "OWNER",
-  "ARCHITECT",
-  "OTHER",
-];
+const NO_COMPANY = "(No Company)";
 
 export default async function RFQsPage() {
   const user = await getDefaultUser();
@@ -74,15 +58,19 @@ export default async function RFQsPage() {
       )}
 
       {projects.map((project) => {
-        // Group RFQs by contact type
+        // Group RFQs by company
         const grouped: Record<string, typeof project.rfqs> = {};
         for (const rfq of project.rfqs) {
-          const type = rfq.contact?.type || "OTHER";
-          if (!grouped[type]) grouped[type] = [];
-          grouped[type].push(rfq);
+          const company = rfq.contact?.company || NO_COMPANY;
+          if (!grouped[company]) grouped[company] = [];
+          grouped[company].push(rfq);
         }
 
-        const sortedTypes = contactTypeOrder.filter((t) => grouped[t]?.length);
+        const sortedTypes = Object.keys(grouped).sort((a, b) => {
+          if (a === NO_COMPANY) return 1;
+          if (b === NO_COMPANY) return -1;
+          return a.localeCompare(b);
+        });
 
         return (
           <Card key={project.id}>
@@ -106,7 +94,7 @@ export default async function RFQsPage() {
                   {sortedTypes.map((type) => (
                     <div key={type}>
                       <h3 className="text-sm font-semibold text-[var(--muted-foreground)] mb-2">
-                        {contactTypeLabels[type] || type}
+                        {type}
                       </h3>
                       <div className="rounded-lg border border-[var(--border)] overflow-hidden">
                         <table className="w-full text-sm">

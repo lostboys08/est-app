@@ -41,4 +41,5 @@ export async function createRFQs(projectId: string, contactIds: string[]) {
   });
 
   revalidatePath("/rfqs");
+  revalidatePath(`/projects/${projectId}`);
 }

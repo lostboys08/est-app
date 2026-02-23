@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { FolderKanban, Plus } from "lucide-react";
-import { Button, Badge, EmptyState } from "@/components/ui";
+import { Button, EmptyState } from "@/components/ui";
 import prisma from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/user";
-import { ProjectActionsMenu } from "./ProjectActionsMenu";
+import { ProjectRow } from "./ProjectRow";
 export const dynamic = "force-dynamic";
 
 interface ProjectsPageProps {
@@ -100,24 +100,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
               {projects.map((project) => (
-                <tr key={project.id} className="hover:bg-[var(--muted)]/50">
-                  <td className="px-4 py-3 font-medium">{project.name}</td>
-                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
-                    {project.location || "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant="secondary">{project._count.bids}</Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant="secondary">{project._count.rfqs}</Badge>
-                  </td>
-                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
-                    {new Date(project.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <ProjectActionsMenu project={project} />
-                  </td>
-                </tr>
+                <ProjectRow key={project.id} project={project} />
               ))}
             </tbody>
           </table>
