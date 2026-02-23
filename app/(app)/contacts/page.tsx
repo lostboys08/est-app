@@ -3,6 +3,7 @@ import { Users, Plus } from "lucide-react";
 import { Button, Badge, EmptyState } from "@/components/ui";
 import prisma from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/user";
+import { getSubcategories } from "@/lib/subcategories";
 import { ContactActionsMenu } from "./ContactActionsMenu";
 export const dynamic = "force-dynamic";
 
@@ -26,10 +27,13 @@ const contactTypeBadgeVariant: Record<string, "default" | "success" | "warning" 
 
 export default async function ContactsPage() {
   const user = await getDefaultUser();
-  const contacts = await prisma.contact.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-  });
+  const [contacts, subcategories] = await Promise.all([
+    prisma.contact.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+    }),
+    getSubcategories(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -107,7 +111,7 @@ export default async function ContactsPage() {
                     {contact.location || "—"}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <ContactActionsMenu contact={contact} />
+                    <ContactActionsMenu contact={contact} subcategories={subcategories} />
                   </td>
                 </tr>
               ))}

@@ -11,7 +11,7 @@ import {
   Input,
 } from "@/components/ui";
 import { updateContact } from "./actions";
-import { contactTypes, SUBCATEGORIES } from "./contact-types";
+import { contactTypes } from "./contact-types";
 
 const selectClass =
   "flex h-10 w-full rounded-lg border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2";
@@ -30,16 +30,18 @@ interface EditContactDialogProps {
     location: string | null;
     notes: string | null;
   };
+  subcategories: Record<string, string[]>;
 }
 
 export function EditContactDialog({
   open,
   onOpenChange,
   contact,
+  subcategories,
 }: EditContactDialogProps) {
   const [isPending, startTransition] = useTransition();
   const [selectedType, setSelectedType] = useState(contact.type);
-  const subcategories = SUBCATEGORIES[selectedType] || [];
+  const typeSubcategories = subcategories[selectedType] || [];
 
   function handleSubmit(formData: FormData) {
     startTransition(async () => {
@@ -86,7 +88,7 @@ export function EditContactDialog({
               placeholder="(555) 555-5555"
             />
           </div>
-          <div className={subcategories.length > 0 ? "grid gap-4 sm:grid-cols-2" : ""}>
+          <div className={typeSubcategories.length > 0 ? "grid gap-4 sm:grid-cols-2" : ""}>
             <div className="space-y-1.5">
               <label
                 htmlFor="edit-type"
@@ -108,7 +110,7 @@ export function EditContactDialog({
                 ))}
               </select>
             </div>
-            {subcategories.length > 0 && (
+            {typeSubcategories.length > 0 && (
               <div className="space-y-1.5">
                 <label
                   htmlFor="edit-subCategory"
@@ -124,7 +126,7 @@ export function EditContactDialog({
                   className={selectClass}
                 >
                   <option value="">— Select —</option>
-                  {subcategories.map((sc) => (
+                  {typeSubcategories.map((sc) => (
                     <option key={sc} value={sc}>
                       {sc}
                     </option>

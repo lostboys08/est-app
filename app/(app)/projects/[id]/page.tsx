@@ -4,7 +4,7 @@ import { ArrowLeft, ExternalLink, CalendarDays, MapPin } from "lucide-react";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import prisma from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/user";
-import { SendRFQButton } from "@/app/(app)/rfqs/send-button";
+import { SendRFQButton, SendCompanyRFQButton } from "@/app/(app)/rfqs/send-button";
 import { AddRFQsButton } from "./AddRFQsButton";
 export const dynamic = "force-dynamic";
 
@@ -126,11 +126,44 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </p>
           ) : (
             <div className="space-y-4">
-              {sortedTypes.map((type) => (
+              {sortedTypes.map((type) => {
+                const dueDateStr = project.dueDate
+                  ? new Date(project.dueDate).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                  : "[Due Date TBD]";
+                const fileLink = project.fileUrl ?? "[Insert project files link here]";
+
+                const companyEmails = grouped[type]
+                  .map((rfq) => rfq.contact?.email)
+                  .filter((e): e is string => Boolean(e));
+                const draftRfqIds = grouped[type]
+                  .filter((rfq) => rfq.status === "DRAFT" && rfq.contact?.email)
+                  .map((rfq) => rfq.id);
+                const companyMailtoUrl = companyEmails.length > 0
+                  ? `mailto:${companyEmails.join(",")}?subject=${encodeURIComponent(
+                      `Request for Quote - ${project.name}`
+                    )}&body=${encodeURIComponent(
+                      `Hi,\n\nWe are requesting a quote for the ${project.name} project. Please review the project documents and provide pricing for your scope of work.\n\nOur bid is due on ${dueDateStr}, so we must receive your quote no later than that date. Earlier submission is strongly preferred to allow adequate time for review.\n\nThe project files are available at the link below:\n${fileLink}\n\nIf you have any questions or need additional information, please contact us as soon as possible. Bids should be sent to: Estimating@kennyseng.com.\n\nThank you for your prompt attention to this request.\n\nThanks,`
+                    )}`
+                  : "";
+
+                return (
                 <div key={type}>
-                  <h3 className="text-sm font-semibold text-[var(--muted-foreground)] mb-2">
-                    {type}
-                  </h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-semibold text-[var(--muted-foreground)]">
+                      {type}
+                    </h3>
+                    {companyEmails.length > 0 && (
+                      <SendCompanyRFQButton
+                        draftRfqIds={draftRfqIds}
+                        mailtoUrl={companyMailtoUrl}
+                        projectId={project.id}
+                      />
+                    )}
+                  </div>
                   <div className="rounded-lg border border-[var(--border)] overflow-hidden">
                     <table className="w-full text-sm">
                       <tbody className="divide-y divide-[var(--border)]">
@@ -138,15 +171,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                           const contact = rfq.contact;
                           const firstName =
                             contact?.name?.split(" ")[0] ?? contact?.name ?? "";
-                          const dueDateStr = project.dueDate
-                            ? new Date(project.dueDate).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              })
-                            : "[Due Date TBD]";
-                          const fileLink =
-                            project.fileUrl ?? "[Insert project files link here]";
                           const mailtoUrl = contact?.email
                             ? `mailto:${contact.email}?subject=${encodeURIComponent(
                                 `Request for Quote - ${project.name}`
@@ -181,7 +205,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                     </table>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>

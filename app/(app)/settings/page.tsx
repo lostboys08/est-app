@@ -1,7 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui";
 import { AppearanceSettings } from "./AppearanceSettings";
+import { SubcategorySettings } from "./SubcategorySettings";
+import { getSubcategoryRecords } from "@/lib/subcategories";
+export const dynamic = "force-dynamic";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const subcategories = await getSubcategoryRecords();
+
   return (
     <div className="space-y-6">
       <div>
@@ -19,6 +24,18 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent>
             <AppearanceSettings />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Contact Subcategories</CardTitle>
+            <CardDescription>
+              Define the subcategories available when adding or editing contacts
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SubcategorySettings subcategories={subcategories} />
           </CardContent>
         </Card>
 
