@@ -19,10 +19,11 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  contacts Contact[]
-  projects Project[]
-  bids     Bid[]
-  rfqs     RFQ[]
+  contacts      Contact[]
+  projects      Project[]
+  bids          Bid[]
+  rfqs          RFQ[]
+  subcategories Subcategory[]
 }
 
 model Contact {
@@ -127,6 +128,20 @@ model RFQ {
   @@index([userId])
   @@index([projectId])
   @@index([contactId])
+}
+
+model Subcategory {
+  id          String   @id @default(cuid())
+  contactType String
+  name        String
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, contactType])
 }
 
 model RFQResponse {

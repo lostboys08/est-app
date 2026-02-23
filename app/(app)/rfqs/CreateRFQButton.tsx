@@ -12,28 +12,12 @@ import {
 } from "@/components/ui";
 import { createRFQs } from "./actions";
 
-const contactTypeLabels: Record<string, string> = {
-  SUBCONTRACTOR: "Subcontractors",
-  SUPPLIER: "Suppliers",
-  GENERAL_CONTRACTOR: "General Contractors",
-  OWNER: "Owners",
-  ARCHITECT: "Architects",
-  OTHER: "Other",
-};
-
-const contactTypeOrder = [
-  "SUBCONTRACTOR",
-  "SUPPLIER",
-  "GENERAL_CONTRACTOR",
-  "OWNER",
-  "ARCHITECT",
-  "OTHER",
-];
-
 interface CreateRFQButtonProps {
   projects: { id: string; name: string }[];
-  contacts: { id: string; name: string; email: string | null; type: string }[];
+  contacts: { id: string; name: string; email: string | null; type: string; company: string | null }[];
 }
+
+const NO_COMPANY = "(No Company)";
 
 export function CreateRFQButton({ projects, contacts }: CreateRFQButtonProps) {
   const [open, setOpen] = useState(false);
@@ -45,6 +29,16 @@ export function CreateRFQButton({ projects, contacts }: CreateRFQButtonProps) {
     setSelectedContacts((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
+  }
+
+  function handleToggleCompany(companyContacts: typeof contacts) {
+    const ids = companyContacts.map((c) => c.id);
+    const allSelected = ids.every((id) => selectedContacts.includes(id));
+    if (allSelected) {
+      setSelectedContacts((prev) => prev.filter((id) => !ids.includes(id)));
+    } else {
+      setSelectedContacts((prev) => [...new Set([...prev, ...ids])]);
+    }
   }
 
   function handleClose() {
@@ -63,15 +57,20 @@ export function CreateRFQButton({ projects, contacts }: CreateRFQButtonProps) {
 
   const grouped: Record<string, typeof contacts> = {};
   for (const contact of contacts) {
-    const type = contact.type || "OTHER";
-    if (!grouped[type]) grouped[type] = [];
-    grouped[type].push(contact);
+    const company = contact.company || NO_COMPANY;
+    if (!grouped[company]) grouped[company] = [];
+    grouped[company].push(contact);
   }
-  const sortedTypes = contactTypeOrder.filter((t) => grouped[t]?.length);
+  const sortedCompanies = Object.keys(grouped).sort((a, b) => {
+    if (a === NO_COMPANY) return 1;
+    if (b === NO_COMPANY) return -1;
+    return a.localeCompare(b);
+  });
 
-  const submitLabel = selectedContacts.length > 0
-    ? `Create ${selectedContacts.length} RFQ${selectedContacts.length !== 1 ? "s" : ""}`
-    : "Create RFQs";
+  const submitLabel =
+    selectedContacts.length > 0
+      ? `Create ${selectedContacts.length} RFQ${selectedContacts.length !== 1 ? "s" : ""}`
+      : "Create RFQs";
 
   return (
     <>
@@ -121,34 +120,49 @@ export function CreateRFQButton({ projects, contacts }: CreateRFQButtonProps) {
                 </p>
               ) : (
                 <div className="rounded-lg border border-[var(--border)] max-h-64 overflow-y-auto divide-y divide-[var(--border)]">
-                  {sortedTypes.map((type) => (
-                    <div key={type}>
-                      <div className="px-3 py-1.5 bg-[var(--muted)] text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">
-                        {contactTypeLabels[type]}
-                      </div>
-                      {grouped[type].map((contact) => (
-                        <label
-                          key={contact.id}
-                          className="flex items-center gap-3 px-3 py-2 hover:bg-[var(--muted)]/50 cursor-pointer"
-                        >
+                  {sortedCompanies.map((company) => {
+                    const companyContacts = grouped[company];
+                    const ids = companyContacts.map((c) => c.id);
+                    const allSelected = ids.every((id) => selectedContacts.includes(id));
+                    const someSelected = ids.some((id) => selectedContacts.includes(id));
+                    return (
+                      <div key={company}>
+                        <label className="flex items-center gap-3 px-3 py-1.5 bg-[var(--muted)] cursor-pointer hover:bg-[var(--muted)]/80">
                           <input
                             type="checkbox"
-                            checked={selectedContacts.includes(contact.id)}
-                            onChange={() => handleToggle(contact.id)}
+                            checked={allSelected}
+                            ref={(el) => { if (el) el.indeterminate = someSelected && !allSelected; }}
+                            onChange={() => handleToggleCompany(companyContacts)}
                             className="h-4 w-4 rounded border-[var(--input)]"
                           />
-                          <span className="text-sm">
-                            {contact.name}
-                            {contact.email && (
-                              <span className="text-[var(--muted-foreground)] ml-2">
-                                {contact.email}
-                              </span>
-                            )}
+                          <span className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">
+                            {company}
                           </span>
                         </label>
-                      ))}
-                    </div>
-                  ))}
+                        {companyContacts.map((contact) => (
+                          <label
+                            key={contact.id}
+                            className="flex items-center gap-3 px-3 py-2 hover:bg-[var(--muted)]/50 cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedContacts.includes(contact.id)}
+                              onChange={() => handleToggle(contact.id)}
+                              className="h-4 w-4 rounded border-[var(--input)]"
+                            />
+                            <span className="text-sm">
+                              {contact.name}
+                              {contact.email && (
+                                <span className="text-[var(--muted-foreground)] ml-2">
+                                  {contact.email}
+                                </span>
+                              )}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

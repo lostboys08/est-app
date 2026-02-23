@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { Mail, Check } from "lucide-react";
 import { Button, Badge } from "@/components/ui";
-import { markRFQSent } from "./actions";
+import { markRFQSent, markRFQsSent } from "./actions";
 
 interface SendRFQButtonProps {
   rfqId: string;
@@ -24,6 +24,32 @@ const statusBadgeVariant: Record<string, "default" | "success" | "warning" | "se
   RECEIVED: "success",
   CLOSED: "warning",
 };
+
+interface SendCompanyRFQButtonProps {
+  draftRfqIds: string[];
+  mailtoUrl: string;
+  projectId: string;
+}
+
+export function SendCompanyRFQButton({ draftRfqIds, mailtoUrl, projectId }: SendCompanyRFQButtonProps) {
+  const [isPending, startTransition] = useTransition();
+
+  const handleClick = () => {
+    window.location.href = mailtoUrl;
+    if (draftRfqIds.length > 0) {
+      startTransition(async () => {
+        await markRFQsSent(draftRfqIds, projectId);
+      });
+    }
+  };
+
+  return (
+    <Button size="sm" variant="secondary" onClick={handleClick} disabled={isPending}>
+      <Mail className="h-3 w-3 mr-1" />
+      {isPending ? "Sending..." : "Send All"}
+    </Button>
+  );
+}
 
 export function SendRFQButton({ rfqId, mailtoUrl, status }: SendRFQButtonProps) {
   const [isPending, startTransition] = useTransition();

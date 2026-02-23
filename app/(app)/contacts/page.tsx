@@ -8,10 +8,13 @@ export const dynamic = "force-dynamic";
 
 export default async function ContactsPage() {
   const user = await getDefaultUser();
-  const contacts = await prisma.contact.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-  });
+  const [contacts, subcategories] = await Promise.all([
+    prisma.contact.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+    }),
+    getSubcategories(),
+  ]);
 
   return (
     <div className="space-y-6">

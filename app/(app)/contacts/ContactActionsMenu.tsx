@@ -18,9 +18,10 @@ interface ContactActionsMenuProps {
     location: string | null;
     notes: string | null;
   };
+  subcategories: Record<string, string[]>;
 }
 
-export function ContactActionsMenu({ contact }: ContactActionsMenuProps) {
+export function ContactActionsMenu({ contact, subcategories }: ContactActionsMenuProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -46,6 +47,7 @@ export function ContactActionsMenu({ contact }: ContactActionsMenuProps) {
         open={editOpen}
         onOpenChange={setEditOpen}
         contact={contact}
+        subcategories={subcategories}
       />
       <DeleteContactDialog
         open={deleteOpen}
