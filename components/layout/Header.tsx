@@ -17,7 +17,7 @@ export function Header() {
       >
         <Menu className="h-5 w-5" />
       </button>
-      <span className="ml-3 font-semibold text-lg">Estimator</span>
+      <span className="ml-3 font-semibold text-lg">KSC Estimator</span>
     </header>
   );
 }
