@@ -116,7 +116,7 @@ export function EditContactDialog({
                   htmlFor="edit-subCategory"
                   className="block text-sm font-medium text-[var(--foreground)]"
                 >
-                  Sub Category
+                  Scope
                 </label>
                 <select
                   key={selectedType}

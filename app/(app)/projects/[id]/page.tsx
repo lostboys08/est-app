@@ -75,10 +75,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   {project.location}
                 </span>
               )}
-              {project.dueDate && (
+              {project.bidDueDate && (
                 <span className="flex items-center gap-1">
                   <CalendarDays className="h-3.5 w-3.5" />
-                  Due {new Date(project.dueDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                  Bid Due {new Date(project.bidDueDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                </span>
+              )}
+              {project.rfqDueDate && (
+                <span className="flex items-center gap-1">
+                  <CalendarDays className="h-3.5 w-3.5" />
+                  RFQ Due {new Date(project.rfqDueDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
                 </span>
               )}
             </div>
@@ -127,8 +133,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           ) : (
             <div className="space-y-4">
               {sortedTypes.map((type) => {
-                const dueDateStr = project.dueDate
-                  ? new Date(project.dueDate).toLocaleDateString("en-US", {
+                const dueDateStr = project.rfqDueDate
+                  ? new Date(project.rfqDueDate).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -136,33 +142,24 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   : "[Due Date TBD]";
                 const fileLink = project.fileUrl ?? "[Insert project files link here]";
 
-                const companyEmails = grouped[type]
-                  .map((rfq) => rfq.contact?.email)
-                  .filter((e): e is string => Boolean(e));
-                const draftRfqIds = grouped[type]
-                  .filter((rfq) => rfq.status === "DRAFT" && rfq.contact?.email)
-                  .map((rfq) => rfq.id);
-                const companyMailtoUrl = companyEmails.length > 0
-                  ? `mailto:${companyEmails.join(",")}?subject=${encodeURIComponent(
-                      `Request for Quote - ${project.name}`
-                    )}&body=${encodeURIComponent(
-                      `Hi,\n\nWe are requesting a quote for the ${project.name} project. Please review the project documents and provide pricing for your scope of work.\n\nOur bid is due on ${dueDateStr}, so we must receive your quote no later than that date. Earlier submission is strongly preferred to allow adequate time for review.\n\nThe project files are available at the link below:\n${fileLink}\n\nIf you have any questions or need additional information, please contact us as soon as possible. Bids should be sent to: Estimating@kennyseng.com.\n\nThank you for your prompt attention to this request.\n\nThanks,`
-                    )}`
-                  : "";
-
                 return (
                 <div key={type}>
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-sm font-semibold text-[var(--muted-foreground)]">
                       {type}
                     </h3>
-                    {companyEmails.length > 0 && (
-                      <SendCompanyRFQButton
-                        draftRfqIds={draftRfqIds}
-                        mailtoUrl={companyMailtoUrl}
-                        projectId={project.id}
-                      />
-                    )}
+                    <SendCompanyRFQButton
+                      projectId={project.id}
+                      projectName={project.name}
+                      dueDateStr={dueDateStr}
+                      fileLink={fileLink}
+                      contacts={grouped[type].map((rfq) => ({
+                        rfqId: rfq.id,
+                        name: rfq.contact?.name ?? "Unknown",
+                        email: rfq.contact?.email ?? null,
+                        status: rfq.status,
+                      }))}
+                    />
                   </div>
                   <div className="rounded-lg border border-[var(--border)] overflow-hidden">
                     <table className="w-full text-sm">
@@ -188,7 +185,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                                 {contact?.email || "No email"}
                               </td>
                               <td className="px-4 py-3 text-right">
-                                {contact?.email ? (
+                                {rfq.status === "DRAFT" ? (
+                                  contact?.email ? (
+                                    <Badge variant="secondary">Draft</Badge>
+                                  ) : (
+                                    <Badge variant="secondary">No email</Badge>
+                                  )
+                                ) : contact?.email ? (
                                   <SendRFQButton
                                     rfqId={rfq.id}
                                     mailtoUrl={mailtoUrl}

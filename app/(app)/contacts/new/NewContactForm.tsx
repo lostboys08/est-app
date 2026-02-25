@@ -49,7 +49,7 @@ export function NewContactForm({ subcategories }: NewContactFormProps) {
         {typeSubcategories.length > 0 && (
           <div className="space-y-1.5">
             <label htmlFor="subCategory" className="block text-sm font-medium text-[var(--foreground)]">
-              Sub Category
+              Scope
             </label>
             <select
               key={selectedType}

@@ -27,7 +27,7 @@ export default async function SettingsPage() {
           </CardContent>
         </Card>
 
-       <Card>
+        <Card>
           <CardHeader>
             <CardTitle>Company</CardTitle>
             <CardDescription>Your company details for bid documents</CardDescription>
@@ -38,7 +38,19 @@ export default async function SettingsPage() {
             </p>
           </CardContent>
         </Card>
-     </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Scope of Work</CardTitle>
+            <CardDescription>
+              Manage scopes for your contacts
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SubcategorySettings subcategories={subcategories} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -3,15 +3,19 @@ import { Users, Plus } from "lucide-react";
 import { Button, EmptyState } from "@/components/ui";
 import prisma from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/user";
+import { getSubcategories } from "@/lib/subcategories";
 import { ContactsView } from "./ContactsView";
 export const dynamic = "force-dynamic";
 
 export default async function ContactsPage() {
   const user = await getDefaultUser();
-  const contacts = await prisma.contact.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-  });
+  const [contacts, subcategories] = await Promise.all([
+    prisma.contact.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+    }),
+    getSubcategories(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -50,7 +54,7 @@ export default async function ContactsPage() {
           }
         />
       ) : (
-        <ContactsView contacts={contacts} />
+        <ContactsView contacts={contacts} subcategories={subcategories} />
       )}
     </div>
   );

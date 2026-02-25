@@ -51,7 +51,7 @@ export function SubcategorySettings({ subcategories }: SubcategorySettingsProps)
             <div className="rounded-lg border border-[var(--border)] divide-y divide-[var(--border)]">
               {items.length === 0 && !isAdding && (
                 <p className="px-3 py-2 text-sm text-[var(--muted-foreground)]">
-                  No subcategories yet
+                  No scopes yet
                 </p>
               )}
               {items.map((sc) => (
@@ -73,7 +73,7 @@ export function SubcategorySettings({ subcategories }: SubcategorySettingsProps)
                     className={inputClass}
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    placeholder="Subcategory name"
+                    placeholder="Scope name"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -113,7 +113,7 @@ export function SubcategorySettings({ subcategories }: SubcategorySettingsProps)
                   className="flex items-center gap-1.5 px-3 py-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] w-full transition-colors"
                 >
                   <Plus className="h-3.5 w-3.5" />
-                  Add subcategory
+                  Add scope
                 </button>
               )}
             </div>

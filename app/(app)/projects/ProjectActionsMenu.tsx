@@ -14,7 +14,8 @@ interface ProjectActionsMenuProps {
     description: string | null;
     location: string | null;
     fileUrl: string | null;
-    dueDate: Date | null;
+    bidDueDate: Date | null;
+    rfqDueDate: Date | null;
     archived: boolean;
   };
 }

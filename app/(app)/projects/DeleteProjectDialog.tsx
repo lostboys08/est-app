@@ -39,8 +39,7 @@ export function DeleteProjectDialog({
           <DialogTitle>Delete Project</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete &ldquo;{project.name}&rdquo;? This
-            action cannot be undone. Associated bids and RFQs will be
-            unlinked from this project.
+            action cannot be undone. Associated RFQs will be deleted.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

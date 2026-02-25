@@ -19,7 +19,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
     orderBy: { createdAt: "desc" },
     include: {
       _count: {
-        select: { bids: true, rfqs: true },
+        select: { rfqs: true },
       },
     },
   });
@@ -30,7 +30,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
         <div>
           <h1 className="text-2xl font-bold">Projects</h1>
           <p className="text-[var(--muted-foreground)]">
-            Organize your bids and RFQs by project.
+            Organize your RFQs by project.
           </p>
         </div>
         <Link href="/projects/new">
@@ -72,7 +72,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
           description={
             showArchived
               ? "Projects you archive will appear here."
-              : "Create your first project to start organizing your bids and RFQs."
+              : "Create your first project to start organizing your RFQs."
           }
           action={
             !showArchived ? (
@@ -92,7 +92,6 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
               <tr>
                 <th className="text-left px-4 py-3 font-medium">Name</th>
                 <th className="text-left px-4 py-3 font-medium">Location</th>
-                <th className="text-left px-4 py-3 font-medium">Bids</th>
                 <th className="text-left px-4 py-3 font-medium">RFQs</th>
                 <th className="text-left px-4 py-3 font-medium">Created</th>
                 <th className="w-12 px-4 py-3"></th>

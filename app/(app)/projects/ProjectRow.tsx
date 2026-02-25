@@ -11,10 +11,11 @@ interface ProjectRowProps {
     description: string | null;
     location: string | null;
     fileUrl: string | null;
-    dueDate: Date | null;
+    bidDueDate: Date | null;
+    rfqDueDate: Date | null;
     archived: boolean;
     createdAt: Date;
-    _count: { bids: number; rfqs: number };
+    _count: { rfqs: number };
   };
 }
 
@@ -29,9 +30,6 @@ export function ProjectRow({ project }: ProjectRowProps) {
       <td className="px-4 py-3 font-medium">{project.name}</td>
       <td className="px-4 py-3 text-[var(--muted-foreground)]">
         {project.location || "—"}
-      </td>
-      <td className="px-4 py-3">
-        <Badge variant="secondary">{project._count.bids}</Badge>
       </td>
       <td className="px-4 py-3">
         <Badge variant="secondary">{project._count.rfqs}</Badge>

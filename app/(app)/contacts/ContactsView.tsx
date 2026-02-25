@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import { Filter } from "lucide-react";
 import { Badge } from "@/components/ui";
 import { ContactActionsMenu } from "./ContactActionsMenu";
-import { SUBCATEGORIES } from "./contact-types";
 
 interface Contact {
   id: string;
@@ -48,7 +47,13 @@ const tabs = [
 
 type TabKey = (typeof tabs)[number]["key"];
 
-export function ContactsView({ contacts }: { contacts: Contact[] }) {
+export function ContactsView({
+  contacts,
+  subcategories,
+}: {
+  contacts: Contact[];
+  subcategories: Record<string, string[]>;
+}) {
   const [activeTab, setActiveTab] = useState<TabKey>("ALL");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
 
@@ -74,15 +79,15 @@ export function ContactsView({ contacts }: { contacts: Contact[] }) {
 
   // Get available subcategories based on current tab
   const availableCategories = useMemo(() => {
-    if (activeTab === "SUBCONTRACTOR") return SUBCATEGORIES.SUBCONTRACTOR;
-    if (activeTab === "SUPPLIER") return SUBCATEGORIES.SUPPLIER;
+    if (activeTab === "SUBCONTRACTOR") return subcategories.SUBCONTRACTOR ?? [];
+    if (activeTab === "SUPPLIER") return subcategories.SUPPLIER ?? [];
     if (activeTab === "OTHER") return [];
     // For "ALL", combine both
     return [
-      ...SUBCATEGORIES.SUBCONTRACTOR,
-      ...SUBCATEGORIES.SUPPLIER,
+      ...(subcategories.SUBCONTRACTOR ?? []),
+      ...(subcategories.SUPPLIER ?? []),
     ].sort();
-  }, [activeTab]);
+  }, [activeTab, subcategories]);
 
   // Reset category filter when switching tabs if the selected category isn't available
   const handleTabChange = (tab: TabKey) => {
@@ -92,10 +97,10 @@ export function ContactsView({ contacts }: { contacts: Contact[] }) {
     } else if (categoryFilter) {
       const newCategories =
         tab === "SUBCONTRACTOR"
-          ? SUBCATEGORIES.SUBCONTRACTOR
+          ? (subcategories.SUBCONTRACTOR ?? [])
           : tab === "SUPPLIER"
-            ? SUBCATEGORIES.SUPPLIER
-            : [...SUBCATEGORIES.SUBCONTRACTOR, ...SUBCATEGORIES.SUPPLIER];
+            ? (subcategories.SUPPLIER ?? [])
+            : [...(subcategories.SUBCONTRACTOR ?? []), ...(subcategories.SUPPLIER ?? [])];
       if (!newCategories.includes(categoryFilter)) {
         setCategoryFilter("");
       }
@@ -205,7 +210,7 @@ export function ContactsView({ contacts }: { contacts: Contact[] }) {
                     {contact.location || "—"}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <ContactActionsMenu contact={contact} subcategories={SUBCATEGORIES} />
+                    <ContactActionsMenu contact={contact} subcategories={subcategories} />
                   </td>
                 </tr>
               ))}

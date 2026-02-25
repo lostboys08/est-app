@@ -12,8 +12,10 @@ export async function createProject(formData: FormData) {
   const description = (formData.get("description") as string) || null;
   const location = (formData.get("location") as string) || null;
   const fileUrl = (formData.get("fileUrl") as string) || null;
-  const dueDateRaw = (formData.get("dueDate") as string) || null;
-  const dueDate = dueDateRaw ? new Date(dueDateRaw) : null;
+  const bidDueDateRaw = (formData.get("bidDueDate") as string) || null;
+  const rfqDueDateRaw = (formData.get("rfqDueDate") as string) || null;
+  const bidDueDate = bidDueDateRaw ? new Date(bidDueDateRaw) : null;
+  const rfqDueDate = rfqDueDateRaw ? new Date(rfqDueDateRaw) : null;
 
   if (!name || !name.trim()) {
     throw new Error("Name is required");
@@ -25,7 +27,8 @@ export async function createProject(formData: FormData) {
       description,
       location,
       fileUrl,
-      dueDate,
+      bidDueDate,
+      rfqDueDate,
       userId: user.id,
     },
   });
@@ -40,8 +43,10 @@ export async function updateProject(id: string, formData: FormData) {
   const description = (formData.get("description") as string) || null;
   const location = (formData.get("location") as string) || null;
   const fileUrl = (formData.get("fileUrl") as string) || null;
-  const dueDateRaw = (formData.get("dueDate") as string) || null;
-  const dueDate = dueDateRaw ? new Date(dueDateRaw) : null;
+  const bidDueDateRaw = (formData.get("bidDueDate") as string) || null;
+  const rfqDueDateRaw = (formData.get("rfqDueDate") as string) || null;
+  const bidDueDate = bidDueDateRaw ? new Date(bidDueDateRaw) : null;
+  const rfqDueDate = rfqDueDateRaw ? new Date(rfqDueDateRaw) : null;
 
   if (!name || !name.trim()) {
     throw new Error("Name is required");
@@ -54,7 +59,8 @@ export async function updateProject(id: string, formData: FormData) {
       description,
       location,
       fileUrl,
-      dueDate,
+      bidDueDate,
+      rfqDueDate,
     },
   });
 

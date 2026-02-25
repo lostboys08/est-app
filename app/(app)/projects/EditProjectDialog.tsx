@@ -21,7 +21,8 @@ interface EditProjectDialogProps {
     description: string | null;
     location: string | null;
     fileUrl: string | null;
-    dueDate: Date | null;
+    bidDueDate: Date | null;
+    rfqDueDate: Date | null;
   };
 }
 
@@ -67,9 +68,15 @@ export function EditProjectDialog({
           />
           <Input
             label="Bid Due Date"
-            name="dueDate"
+            name="bidDueDate"
             type="date"
-            defaultValue={project.dueDate ? new Date(project.dueDate).toISOString().split("T")[0] : ""}
+            defaultValue={project.bidDueDate ? new Date(project.bidDueDate).toISOString().split("T")[0] : ""}
+          />
+          <Input
+            label="RFQ Due Date"
+            name="rfqDueDate"
+            type="date"
+            defaultValue={project.rfqDueDate ? new Date(project.rfqDueDate).toISOString().split("T")[0] : ""}
           />
           <div className="space-y-1.5">
             <label

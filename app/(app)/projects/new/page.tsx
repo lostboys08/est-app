@@ -18,7 +18,7 @@ export default function NewProjectPage() {
         <div>
           <h1 className="text-2xl font-bold">New Project</h1>
           <p className="text-[var(--muted-foreground)]">
-            Create a new project to organize your bids and RFQs.
+            Create a new project to organize your RFQs.
           </p>
         </div>
       </div>
@@ -32,7 +32,8 @@ export default function NewProjectPage() {
             <Input label="Name" name="name" placeholder="Project name" required />
             <Input label="Location" name="location" placeholder="City, State" />
             <Input label="Project Files Link" name="fileUrl" placeholder="https://..." />
-            <Input label="Bid Due Date" name="dueDate" type="date" />
+            <Input label="Bid Due Date" name="bidDueDate" type="date" />
+            <Input label="RFQ Due Date" name="rfqDueDate" type="date" />
             <div className="space-y-1.5">
               <label htmlFor="description" className="block text-sm font-medium text-[var(--foreground)]">
                 Description

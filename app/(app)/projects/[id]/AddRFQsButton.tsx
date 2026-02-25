@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogFooter,
   Button,
+  Input,
 } from "@/components/ui";
 import { createRFQs } from "@/app/(app)/rfqs/actions";
 
@@ -22,6 +23,7 @@ const NO_COMPANY = "(No Company)";
 export function AddRFQsButton({ projectId, contacts }: AddRFQsButtonProps) {
   const [open, setOpen] = useState(false);
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
+  const [search, setSearch] = useState("");
   const [isPending, startTransition] = useTransition();
 
   function handleToggle(id: string) {
@@ -43,6 +45,7 @@ export function AddRFQsButton({ projectId, contacts }: AddRFQsButtonProps) {
   function handleClose() {
     setOpen(false);
     setSelectedContacts([]);
+    setSearch("");
   }
 
   function handleSubmit() {
@@ -63,6 +66,13 @@ export function AddRFQsButton({ projectId, contacts }: AddRFQsButtonProps) {
     if (a === NO_COMPANY) return 1;
     if (b === NO_COMPANY) return -1;
     return a.localeCompare(b);
+  });
+
+  const query = search.toLowerCase();
+  const filteredCompanies = sortedCompanies.filter((company) => {
+    if (!query) return true;
+    if (company.toLowerCase().includes(query)) return true;
+    return grouped[company].some((c) => c.name.toLowerCase().includes(query));
   });
 
   const submitLabel =
@@ -92,8 +102,21 @@ export function AddRFQsButton({ projectId, contacts }: AddRFQsButtonProps) {
                 All contacts already have RFQs for this project, or there are no contacts yet.
               </p>
             ) : (
-              <div className="rounded-lg border border-[var(--border)] max-h-72 overflow-y-auto divide-y divide-[var(--border)]">
-                {sortedCompanies.map((company) => {
+              <>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--muted-foreground)] pointer-events-none" />
+                <Input
+                  placeholder="Search companies..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-8 h-8 text-sm"
+                />
+              </div>
+              <div className="rounded-lg border border-[var(--border)] max-h-64 overflow-y-auto divide-y divide-[var(--border)]">
+                {filteredCompanies.length === 0 && (
+                  <p className="px-3 py-4 text-sm text-[var(--muted-foreground)] text-center">No companies match your search.</p>
+                )}
+                {filteredCompanies.map((company) => {
                   const companyContacts = grouped[company];
                   const ids = companyContacts.map((c) => c.id);
                   const allSelected = ids.every((id) => selectedContacts.includes(id));
@@ -137,6 +160,7 @@ export function AddRFQsButton({ projectId, contacts }: AddRFQsButtonProps) {
                   );
                 })}
               </div>
+              </>
             )}
           </div>
 
