@@ -57,7 +57,7 @@ export function Sidebar() {
           )}
         >
           {!isCollapsed && (
-            <span className="font-semibold text-lg">Estimator</span>
+            <span className="font-semibold text-lg">KSC Estimator</span>
           )}
 
           {/* Desktop collapse button */}
