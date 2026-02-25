@@ -12,6 +12,18 @@ export async function markRFQSent(rfqId: string) {
   revalidatePath("/rfqs");
 }
 
+export async function updateRFQStatus(rfqId: string, status: string) {
+  const rfq = await prisma.rFQ.update({
+    where: { id: rfqId },
+    data: { status },
+    select: { projectId: true },
+  });
+  revalidatePath("/rfqs");
+  if (rfq.projectId) {
+    revalidatePath(`/projects/${rfq.projectId}`);
+  }
+}
+
 export async function markRFQsSent(rfqIds: string[], projectId: string) {
   if (rfqIds.length === 0) return;
   await prisma.rFQ.updateMany({

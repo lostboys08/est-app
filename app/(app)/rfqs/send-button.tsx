@@ -1,9 +1,9 @@
 "use client";
 
 import { useTransition } from "react";
-import { Mail, Check } from "lucide-react";
+import { Mail, Check, RefreshCw } from "lucide-react";
 import { Button, Badge } from "@/components/ui";
-import { markRFQSent, markRFQsSent } from "./actions";
+import { markRFQSent, markRFQsSent, updateRFQStatus } from "./actions";
 
 interface SendRFQButtonProps {
   rfqId: string;
@@ -15,14 +15,18 @@ const statusLabels: Record<string, string> = {
   DRAFT: "Draft",
   SENT: "Sent",
   RECEIVED: "Received",
-  CLOSED: "Closed",
+  AWAITING_REVISION: "Awaiting Revision",
+  ACCEPTED: "Accepted",
+  DECLINED: "Declined",
 };
 
-const statusBadgeVariant: Record<string, "default" | "success" | "warning" | "secondary"> = {
+const statusBadgeVariant: Record<string, "default" | "success" | "warning" | "secondary" | "destructive"> = {
   DRAFT: "secondary",
   SENT: "default",
   RECEIVED: "success",
-  CLOSED: "warning",
+  AWAITING_REVISION: "warning",
+  ACCEPTED: "success",
+  DECLINED: "destructive",
 };
 
 interface SendCompanyRFQButtonProps {
@@ -54,7 +58,7 @@ export function SendCompanyRFQButton({ draftRfqIds, mailtoUrl, projectId }: Send
 export function SendRFQButton({ rfqId, mailtoUrl, status }: SendRFQButtonProps) {
   const [isPending, startTransition] = useTransition();
 
-  const handleClick = () => {
+  const handleSend = () => {
     window.location.href = mailtoUrl;
     if (status === "DRAFT") {
       startTransition(async () => {
@@ -63,32 +67,79 @@ export function SendRFQButton({ rfqId, mailtoUrl, status }: SendRFQButtonProps) 
     }
   };
 
+  const handleStatusUpdate = (newStatus: string) => {
+    startTransition(async () => {
+      await updateRFQStatus(rfqId, newStatus);
+    });
+  };
+
   if (status === "SENT") {
     return (
-      <div className="flex items-center gap-2">
-        <Badge variant={statusBadgeVariant["SENT"]}>
+      <div className="flex items-center gap-2 justify-end flex-wrap">
+        <Badge variant="default">
           <Check className="h-3 w-3 mr-1" />
           Sent
         </Badge>
-        <Button size="sm" variant="ghost" onClick={handleClick}>
+        <Button size="sm" variant="ghost" onClick={handleSend} disabled={isPending}>
           <Mail className="h-3 w-3 mr-1" />
           Resend
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => handleStatusUpdate("RECEIVED")} disabled={isPending}>
+          <Check className="h-3 w-3 mr-1" />
+          Mark Received
         </Button>
       </div>
     );
   }
 
-  if (status !== "DRAFT") {
+  if (status === "RECEIVED") {
     return (
-      <Badge variant={statusBadgeVariant[status] || "secondary"}>
+      <div className="flex items-center gap-2 justify-end flex-wrap">
+        <Badge variant="success">
+          <Check className="h-3 w-3 mr-1" />
+          Received
+        </Badge>
+        <Button size="sm" variant="ghost" onClick={() => handleStatusUpdate("AWAITING_REVISION")} disabled={isPending}>
+          <RefreshCw className="h-3 w-3 mr-1" />
+          Req. Revision
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => handleStatusUpdate("ACCEPTED")} disabled={isPending}>
+          Accept
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => handleStatusUpdate("DECLINED")} disabled={isPending}>
+          Decline
+        </Button>
+      </div>
+    );
+  }
+
+  if (status === "AWAITING_REVISION") {
+    return (
+      <div className="flex items-center gap-2 justify-end">
+        <Badge variant="warning">
+          <RefreshCw className="h-3 w-3 mr-1" />
+          Awaiting Revision
+        </Badge>
+        <Button size="sm" variant="ghost" onClick={() => handleStatusUpdate("RECEIVED")} disabled={isPending}>
+          <Check className="h-3 w-3 mr-1" />
+          Mark Received
+        </Button>
+      </div>
+    );
+  }
+
+  if (status === "ACCEPTED" || status === "DECLINED") {
+    return (
+      <Badge variant={statusBadgeVariant[status]}>
         <Check className="h-3 w-3 mr-1" />
-        {statusLabels[status] || status}
+        {statusLabels[status]}
       </Badge>
     );
   }
 
+  // DRAFT
   return (
-    <Button size="sm" onClick={handleClick} disabled={isPending}>
+    <Button size="sm" onClick={handleSend} disabled={isPending}>
       <Mail className="h-3 w-3 mr-1" />
       {isPending ? "Sending..." : "Send RFQ"}
     </Button>
