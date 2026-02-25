@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   FolderKanban,
   Users,
-  Send,
   MoreHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,7 +15,6 @@ const mobileNavItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/projects", icon: FolderKanban, label: "Bids" },
   { href: "/contacts", icon: Users, label: "Contacts" },
-  { href: "/rfqs", icon: Send, label: "RFQs" },
 ];
 
 export function MobileNav() {

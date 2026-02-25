@@ -3,7 +3,6 @@
 import {
   LayoutDashboard,
   Users,
-  Send,
   FolderKanban,
   Settings,
   PanelLeftClose,
@@ -18,7 +17,6 @@ const primaryNav = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/projects", icon: FolderKanban, label: "Projects" },
   { href: "/contacts", icon: Users, label: "Contacts" },
-  { href: "/rfqs", icon: Send, label: "RFQs" },
 ];
 
 const secondaryNav = [
